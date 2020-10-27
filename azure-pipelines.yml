@@ -48,7 +48,14 @@ steps:
       git add package.json
       git commit -a -m "Test Commit from Azure DevOps"
       git push -u origin HEAD:master
-      
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: '<Azure service connections>'
+    appName: '<Name of web app>'
+    package: '$(System.DefaultWorkingDirectory)'
+    customWebConfig: '-Handler iisnode -NodeStartFile server.js -appType node'
+       
 - script: |
     npm install
     npm start
