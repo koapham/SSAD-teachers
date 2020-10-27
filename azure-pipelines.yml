@@ -14,10 +14,6 @@ steps:
   inputs:
     versionSpec: '12.1'
   displayName: 'Install Node.js'
-- task: Npm@1
-  inputs:
-  command: 'install'
-  customEndpoint: <Name of npm service connection>
 
 - task: npmAuthenticate@0
   inputs:
@@ -55,7 +51,7 @@ steps:
     appName: '<Name of web app>'
     package: '$(System.DefaultWorkingDirectory)'
     customWebConfig: '-Handler iisnode -NodeStartFile server.js -appType node'
-       
+
 - script: |
     npm install
     npm start
