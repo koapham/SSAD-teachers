@@ -7,15 +7,54 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'macOS-10.15'
 
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '12.1'
   displayName: 'Install Node.js'
+- task: Npm@1
+  inputs:
+  command: 'install'
+  customEndpoint: <Name of npm service connection>
 
+- task: npmAuthenticate@0
+  inputs:
+    customEndpoint: <Name of npm service connection>
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testRunner: JUnit
+    testResultsFiles: '**/TEST-RESULTS.xml'
+
+- task: PublishCodeCoverageResults@1
+  inputs: 
+    codeCoverageTool: Cobertura # or JaCoCo
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
+
+- task: CopyFiles@2
+  inputs:
+    Contents: 'build/**' # Pull the build directory (React)
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  
+- task: CmdLine@2 # Push changes to GitHub (substitute your repo)
+  inputs:
+    script: |
+      git config --global user.email "username@contoso.com"
+      git config --global user.name "Azure Pipeline"
+      git add package.json
+      git commit -a -m "Test Commit from Azure DevOps"
+      git push -u origin HEAD:master
+      
 - script: |
     npm install
+    npm start
     npm run build
+    npm run compile
+    webpack
+    npx mocha
+    mocha test --reporter mocha-junit-reporter
   displayName: 'npm install and build'
