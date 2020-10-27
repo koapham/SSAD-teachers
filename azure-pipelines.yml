@@ -15,10 +15,6 @@ steps:
     versionSpec: '12.1'
   displayName: 'Install Node.js'
 
-- task: npmAuthenticate@0
-  inputs:
-    customEndpoint: <Name of npm service connection>
-
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
@@ -47,8 +43,8 @@ steps:
 
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: '<Azure service connections>'
-    appName: '<Name of web app>'
+    azureSubscription: '37760f83-99ec-4262-bde6-994e66e694f6'
+    appName: 'galaSE'
     package: '$(System.DefaultWorkingDirectory)'
     customWebConfig: '-Handler iisnode -NodeStartFile server.js -appType node'
 
